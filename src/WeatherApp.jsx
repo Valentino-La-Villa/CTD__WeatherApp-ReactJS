@@ -16,6 +16,7 @@ export const WeatherApp = () => {
         try {
             const res = await fetch(`${baseURL}?q=${cityInputRef.current.value}&appid=${API_KEY}&lang=${lang}`)
             const data = await res.json()
+            console.log(data)
             setWeatherData(data)
         }
         catch (err) {
@@ -26,6 +27,11 @@ export const WeatherApp = () => {
     const handleSubmit = (event) => {
         event.preventDefault()
         fetchWeatherData()
+    }
+
+    const weatherDataValidation = () => { 
+        if (weatherData?.cod == '404') return false
+        else return true
     }
 
 
@@ -42,7 +48,7 @@ export const WeatherApp = () => {
             </form>
 
 
-            {weatherData &&
+            {weatherData && ( weatherDataValidation() ?
                 <section>
                     <h2>{weatherData.name}, {weatherData.sys.country}</h2>
                     <p>Current temperature is {Math.round(weatherData.main.temp - kelvinDegreeDiff)}ºC</p>
@@ -52,7 +58,11 @@ export const WeatherApp = () => {
                         alt={weatherData.weather[0].description}
                     />
                 </section>
-            }
+                :
+                <>
+                <p>Error: {weatherData.message}</p>
+                </>
+            )}
         </main>
     )
 }
